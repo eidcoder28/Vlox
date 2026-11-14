@@ -82,16 +82,6 @@ export function capitalize(str) {
     return (str.charAt(0).toUpperCase() + str.slice(1)).trim();
 }
 
-export async function input(config = {}) {
-    return Swal.fire({
-        title: "Enter value:",
-        input: "text",
-        inputPlaceholder: "Enter value...",
-        showCancelButton: true,
-        ...config
-    });
-}
-
 export let quickInfo = {};
 
 export async function initQuickInfo() {
