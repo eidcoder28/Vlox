@@ -118,7 +118,7 @@ signOutBtn.on("click", lockEvent(async function () {
 }));
 
 profileBtn.on("click", lockEvent(async function () {
-    await showProfile(quickInfo?._id);
+    await showProfile(quickInfo?.id);
 }));
 
 toggleAuthButtons();

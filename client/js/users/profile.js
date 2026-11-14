@@ -24,8 +24,8 @@ export default async function showProfile(id) {
         container: null,
         user: {
             username: capitalize(user.username) || "User",
-            id: user._id,
-            me: user._id === quickInfo?._id
+            id: user.id,
+            me: user.id === quickInfo?.id
         }
     }
 

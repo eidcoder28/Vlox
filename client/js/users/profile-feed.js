@@ -53,7 +53,7 @@ export async function renderProfilePosts(state = {}, preFetchedResponse = null) 
             .addClass("fas fa-link post-icon")
             .attr({ role: "button", tabindex: "0" })
             .on("click", async function () {
-                copy(generatePostLink(safePost._id));
+                copy(generatePostLink(safePost.id));
             })
             .appendTo(header);
 
@@ -71,7 +71,7 @@ export async function renderProfilePosts(state = {}, preFetchedResponse = null) 
                 .html("<i class='fas fa-trash'></i>")
                 .on("click", lockEvent(async function () {
                     const response = await sendRequest({
-                        url: `/api/v1/posts/${safePost._id}/delete`,
+                        url: `/api/v1/posts/${safePost.id}/delete`,
                         method: "DELETE"
                     });
 
@@ -89,7 +89,7 @@ export async function renderProfilePosts(state = {}, preFetchedResponse = null) 
                     if (!result.isConfirmed) return;
 
                     const response = await sendRequest({
-                        url: `/api/v1/posts/${safePost._id}/update`,
+                        url: `/api/v1/posts/${safePost.id}/update`,
                         method: "PUT",
                         body: result.value
                     });

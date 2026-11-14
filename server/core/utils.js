@@ -1,15 +1,21 @@
-import schemas from "./schemas.js";
 import rateLimit from "express-rate-limit";
 import config from "./config.js";
+import { PrismaClient } from "@prisma/client";
 import errors from "../../shared/errors.js";
 import { validationResult, matchedData } from "express-validator";
 
 export async function requireAuth(req, res, next) {
-    if (!req.session.isLoggedIn || !req.session.userId) {
+    const { isLoggedIn, userId, } = req.session;
+
+    if (!isLoggedIn || !userId) {
         return res.status(401).json({ error: errors.NOT_AUTHENTICATED() });
     }
 
-    const user = await schemas.Users.findById(req.session.userId).select("username");
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true, username: true }
+    });
+
     if (!user) {
         return res.status(404).json({ error: errors.NOT_FOUND("account") });
     }
@@ -50,3 +56,5 @@ export class ClientError extends Error {
         this.isCustom = true;
     }
 }
+
+export const prisma = new PrismaClient();

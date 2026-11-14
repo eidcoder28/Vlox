@@ -41,16 +41,16 @@ async function renderComments(state = {}, preFetchedResponse = null) {
 
     response.comments.forEach(comment => {
         const safeComment = comment || {};
-        const safeBy = safeComment.by || {};
+        const safeUser = safeComment.user || {};
         const card = $("<div>").addClass("card").appendTo(fragment);
         const header = $("<div>").addClass("space-between").appendTo(card);
 
         $("<h3>")
             .addClass("overflow")
-            .text(capitalize(safeBy.username) || "User")
+            .text(capitalize(safeUser.username) || "User")
             .appendTo(header);
 
-        if (safeBy?._id && safeBy._id === quickInfo?._id) {
+        if (safeUser?.id && safeUser.id === quickInfo?.id) {
             const buttons = $("<div>").addClass("center").appendTo(header);
 
             $("<i>")
@@ -62,7 +62,7 @@ async function renderComments(state = {}, preFetchedResponse = null) {
                     if (!result.isConfirmed) return;
 
                     const response = await sendRequest({
-                        url: `/api/v1/comments/${safeComment._id}/update`,
+                        url: `/api/v1/comments/${safeComment.id}/update`,
                         method: "PUT",
                         body: {
                             content: result.value
@@ -81,7 +81,7 @@ async function renderComments(state = {}, preFetchedResponse = null) {
                 .attr({ role: "button", tabindex: "0" })
                 .on("click", lockEvent(async function () {
                     const response = await sendRequest({
-                        url: `/api/v1/comments/${safeComment._id}/delete`,
+                        url: `/api/v1/comments/${safeComment.id}/delete`,
                         method: "DELETE"
                     });
 

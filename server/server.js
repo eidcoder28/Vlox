@@ -2,19 +2,17 @@ import config from "./core/config.js";
 import express from "express";
 import path from "path";
 import session from "express-session";
-import mongoose from "mongoose";
-import MongoStore from "connect-mongo";
+import connectPgSimple from "connect-pg-simple";
+import { Pool } from "pg";
 import errors from "../shared/errors.js";
 import postsRouter from "./routes/posts.js";
 import authRouter from "./routes/auth.js";
-import { limit } from "./core/utils.js";
+import { limit, prisma } from "./core/utils.js";
 
 const __dirname = import.meta.dirname;
 const app = express();
-
-mongoose.connect(config.MONGO_URI)
-    .then(() => console.log("MongoDB connected!"))
-    .catch(err => console.error(err.message));
+const sessionPool = new Pool({ connectionString: config.DATABASE_URL });
+const PgStore = connectPgSimple(session);
 
 app.use("/shared", express.static(path.join(__dirname, "..", "shared")));
 app.use(express.static(path.join(__dirname, "..", "client"), { index: false }));
@@ -24,9 +22,10 @@ app.use(
         secret: config.SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
-        store: MongoStore.create({
-            mongoUrl: config.MONGO_URI,
-            collectionName: "sessions"
+        store: new PgStore({
+            pool: sessionPool,
+            tableName: "sessions",
+            createTableIfMissing: true
         }),
         cookie: {
             httpOnly: true,
@@ -35,7 +34,7 @@ app.use(
             sameSite: "lax"
         }
     })
-);
+)
 
 const mainLimiter = limit({
     skip: (req) => req.path.includes("/auth")
@@ -55,7 +54,7 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-    if (err.code === 11000) return res.status(409).json({ error: errors.DUPLICATE_RESOURCE("resource") });
+    if (err.code === "P2002") return res.status(409).json({ error: errors.DUPLICATE_RESOURCE("resource") });
     if (err.isCustom) return res.status(err.statusCode).json({ error: err.message });
 
     // For debugging only :)
@@ -63,6 +62,16 @@ app.use((err, req, res, next) => {
     return res.status(500).json({ error: errors.UNEXPECTED_ERROR() });
 });
 
-app.listen(config.PORT, config.HOST, () => {
-    console.log(`Clean Engine live on port ${config.PORT}`);
+async function startServer() {
+    await prisma.$connect();
+
+    app.listen(config.PORT, config.HOST, () => {
+        console.log(`Live on port ${config.PORT}`);
+    });
+}
+
+startServer().catch((err) => {
+    // I love Postgres =]
+    console.error("Failed to connect to Postgres:", err);
+    process.exit(1);
 });

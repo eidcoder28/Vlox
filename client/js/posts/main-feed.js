@@ -40,7 +40,7 @@ export async function renderPosts(posts = []) {
 
     posts.forEach(post => {
         const safePost = post || {};
-        const safeBy = safePost.by || {};
+        const safeUser = safePost.user || {};
         const card = $("<div>").addClass("card").appendTo(fragment);
         const header = $("<div>").addClass("space-between").appendTo(card);
 
@@ -53,7 +53,7 @@ export async function renderPosts(posts = []) {
             .addClass("fas fa-link post-icon")
             .attr({ role: "button", tabindex: "0" })
             .on("click", async function () {
-                copy(generatePostLink(safePost._id));
+                copy(generatePostLink(safePost.id));
             })
             .appendTo(header);
 
@@ -66,9 +66,9 @@ export async function renderPosts(posts = []) {
             .css({ color: "red", cursor: "pointer" })
             .attr("role", "button")
             .attr("tabindex", "0")
-            .text(`Created by: ${capitalize(safeBy.username) || "Someone"}`)
+            .text(`Created by: ${capitalize(safeUser.username) || "Someone"}`)
             .on("click", lockEvent(async function () {
-                await showProfile(safeBy._id);
+                await showProfile(safeUser.id);
             }))
             .appendTo(card);
 
@@ -80,7 +80,7 @@ export async function renderPosts(posts = []) {
             .html(`<i class="fas fa-thumbs-up"></i> <span class="likes-count">${likes}</span>`)
             .on("click", lockEvent(async function () {
                 const likesResponse = await sendRequest({
-                    url: `/api/v1/posts/${safePost._id}/like`,
+                    url: `/api/v1/posts/${safePost.id}/like`,
                     method: "POST"
                 });
 
@@ -94,7 +94,7 @@ export async function renderPosts(posts = []) {
         $("<button>")
             .html(`<i class="fas fa-comments"></i>`)
             .on("click", lockEvent(async function () {
-                await showComments(safePost._id);
+                await showComments(safePost.id);
             }))
             .appendTo(reactions);
 
@@ -106,7 +106,7 @@ export async function renderPosts(posts = []) {
                 if (!result.isConfirmed) return;
 
                 const response = await sendRequest({
-                    url: `/api/v1/posts/${safePost._id}/comments`,
+                    url: `/api/v1/posts/${safePost.id}/comments`,
                     method: "POST",
                     body: {
                         content: result.value

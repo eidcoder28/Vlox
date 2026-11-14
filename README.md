@@ -1,6 +1,6 @@
 # Axion
 
-Axion is my simple microblogging platform. I built it using Node.js, MongoDB, and Cash (cash-dom). I'll be releasing info about the architecture on [my blog](https://eidcoder.hashnode.dev).
+Axion is my simple microblogging platform. It uses Node.js, Postgres with Prisma, and Cash (cash-dom). I'll be releasing info about the architecture on [my blog](https://eidcoder.hashnode.dev).
 
 **Planned Features:**
 
