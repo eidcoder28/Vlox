@@ -46,6 +46,13 @@ export default class PostEditor {
                     return Swal.showValidationMessage(errors.VALIDATION.REQUIRED("content"));
                 }
 
+                if (
+                    title === (this.initial.title || "").trim() &&
+                    content === (this.initial.content || "").trim()
+                ) {
+                    return Swal.showValidationMessage("The values are the same as before.");
+                }
+
                 return { title, content };
             }
         });

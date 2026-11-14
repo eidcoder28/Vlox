@@ -27,9 +27,17 @@ export default class CommentEditor {
             },
 
             preConfirm: result => {
-                if (validator.isEmpty(result)) {
+                const trimmed = result.trim();
+                
+                if (validator.isEmpty(trimmed)) {
                     return Swal.showValidationMessage(errors.VALIDATION.REQUIRED("comment"));
                 }
+
+                if (trimmed === (this.initial?.trim() || "")) {
+                    return Swal.showValidationMessage("The content is the same as before.");
+                }
+
+                return trimmed;
             }
         });
 
