@@ -10,7 +10,7 @@ if (!DATABASE_URL || !SESSION_SECRET) throw new Error("Config Error: DATABASE_UR
 const config = {
     ...sharedConfig,
     MAX_SESSION_AGE: 3600000,
-    JSON_BODY_LIMIT: "10mb",
+    JSON_BODY_LIMIT: "4kb",
     HOST: "0.0.0.0",
     RATE_LIMIT_WINDOW_MS: 900000,
     MAIN_RATE_LIMIT_MAX_REQ: 1000,
